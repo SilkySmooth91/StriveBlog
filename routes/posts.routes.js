@@ -1,7 +1,31 @@
 import express from "express"
 import postsModel from "../models/PostsSchema.js"
+import multer from "multer"
 
 const router = express.Router()
+
+// Configurazione multer
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, "covers/")
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        cb(null, uniqueSuffix + '-' + file.originalname)
+    }
+})
+
+// Middleware di filtro formato img
+function fileFilter(req, file, cb) {
+    if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
+        cb(null, true)
+    } else {
+        cb(null, false)
+        return cb(new error("formato immagine non consentito"))
+    }
+}
+
+const upload = multer({storage: storage, fileFilter: fileFilter})
 
 router.get("/params", async (req, res) => {
     
@@ -52,6 +76,21 @@ router.put("/:id", async (req, res) => {
         res.status(200).json(postEdit)
     } catch (err) {
         res.status(500).json({ error: "errore nella modifica del post" })
+    }
+})
+
+router.patch("/:id/cover", upload.single("cover"), async (req, res) => {
+    const id = req.params.id
+    try {
+        const coverUrl = `/covers/${req.file.filename}`
+        const postEdit = await postsModel.findByIdAndUpdate(
+            id,
+            {cover: coverUrl},
+            {new: true}
+        )
+        res.status(200).json(postEdit)
+    } catch (err) {
+        res.status(500).json({error: "errore durante il caricamento del file"})
     }
 })
 
