@@ -1,6 +1,8 @@
 import express from "express"
 import postsModel from "../models/PostsSchema.js"
 import multer from "multer"
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
 const router = express.Router()
 
@@ -25,7 +27,22 @@ function fileFilter(req, file, cb) {
     }
 }
 
-const upload = multer({storage: storage, fileFilter: fileFilter})
+// Configurazione Coudinary
+
+const cloudStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: "epicode",
+       // format: async (req, file) => "png" -> posso evitare di specificare format se voglio preservare il formato originale delf ile caricato.
+        public_id: (req, file) => {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        cb(null, uniqueSuffix + '-' + file.originalname)
+        }
+    }
+})
+
+const upload = multer({storage: cloudStorage, fileFilter: fileFilter})
+
 
 router.get("/params", async (req, res) => {
     
