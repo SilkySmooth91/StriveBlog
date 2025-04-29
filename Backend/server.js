@@ -9,7 +9,6 @@ import postsRoutes from "./routes/posts.routes.js"
 const app = express();
 app.use(express.json());
 app.use(cors())
-app.use('/avatars', express.static('avatars'))
 
 app.use("/authors", authorsRoutes)
 app.use("/posts", postsRoutes)

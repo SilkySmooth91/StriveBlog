@@ -1,38 +1,8 @@
 import express from "express"
 import postsModel from "../models/PostsSchema.js"
-import multer from "multer"
-import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { uploadCover } from "../middlewares/multer.js"
 
 const router = express.Router()
-
-
-// Middleware di filtro formato img
-function fileFilter(req, file, cb) {
-    if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
-        cb(null, true)
-    } else {
-        cb(null, false)
-        return cb(new error("formato immagine non consentito"))
-    }
-}
-
-// Configurazione Coudinary
-
-const cloudStorage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: "epicode",
-       // format: async (req, file) => "png" -> posso evitare di specificare format se voglio preservare il formato originale delf ile caricato.
-        public_id: (req, file) => {
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-            cb(null, uniqueSuffix + '-' + file.originalname)
-        }
-    }
-})
-
-const upload = multer({storage: cloudStorage, fileFilter: fileFilter})
-
 
 router.get("/params", async (req, res) => {
     
@@ -86,18 +56,19 @@ router.put("/:id", async (req, res) => {
     }
 })
 
-router.patch("/:id/cover", upload.single("cover"), async (req, res) => {
+router.patch("/:id/cover", uploadCover, async (req, res, next) => {
     const id = req.params.id
     try {
-        const coverUrl = `/covers/${req.file.filename}`
         const postEdit = await postsModel.findByIdAndUpdate(
             id,
-            {cover: coverUrl},
+            {cover: req.file.path},
             {new: true}
         )
         res.status(200).json(postEdit)
     } catch (err) {
-        res.status(500).json({error: "errore durante il caricamento del file"})
+        // console.log(err)
+        // res.status(500).json({error: "errore durante il caricamento del file"})
+        next(err)
     }
 })
 

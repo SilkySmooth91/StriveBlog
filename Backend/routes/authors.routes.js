@@ -1,32 +1,8 @@
 import express from "express"
 import authorsModel from "../models/AuthorsSchema.js" 
-import multer from "multer"
+import { uploadAvatar } from "../middlewares/multer.js"
 
 const router = express.Router()
-
-// Configurazione multer
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, "avatars/")
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-        cb(null, uniqueSuffix + '-' + file.originalname)
-    }
-})
-
-// Middleware di filtro formato img
-function fileFilter(req, file, cb) {
-    if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
-        cb(null, true)
-    } else {
-        cb(null, false)
-        return cb(new error("formato immagine non consentito"))
-    }
-}
-
-const upload = multer({storage: storage, fileFilter: fileFilter})
-
 
 router.get("/", async (req, res) => {
     try {
@@ -65,17 +41,17 @@ router.put("/:id", async (req, res) => {
     }
 })
 
-router.patch("/:id/avatar", upload.single("avatar"), async (req, res) => {
+router.patch("/:id/avatar", uploadAvatar, async (req, res) => {
     const id = req.params.id
     try {
-        const avatarUrl = `/avatars/${req.file.filename}`
         const authorUpdated = await authorsModel.findByIdAndUpdate(
             id, 
-            {avatar: avatarUrl},
+            {avatar: req.file.path},
             {new: true}
         )
         res.status(200).json(authorUpdated)
     } catch (err) {
+        console.log(err)
         res.status(500).json({error: "Errore duranante il caricamento del file"})
     }
 })
