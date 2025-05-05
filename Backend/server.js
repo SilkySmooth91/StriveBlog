@@ -5,6 +5,7 @@ import "dotenv/config";
 import db from './db.js';
 import authorsRoutes from "./routes/authors.routes.js"
 import postsRoutes from "./routes/posts.routes.js"
+import commentsRoutes from "./routes/comments.routes.js"
 
 const app = express();
 app.use(express.json());
