@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 
 const commentsSchema = new mongoose.Schema({
     body: { type: String, required: true},
-    date: { type: Date, required: true },
     postId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Posts",

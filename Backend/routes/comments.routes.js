@@ -15,7 +15,7 @@ router.get("/:id/comments", async (req, res) => {
         }
 
         const comments = await commentsModel.find({postId: postId})
-        .populate("Authors", "name avatar") //dovrebbe popolare il commento coi dati nome e avatar dell'autore del commento
+        .populate("author", "name surname avatar") //dovrebbe popolare il commento coi dati nome e avatar dell'autore del commento
         .sort({createdAt: -1}) //per ordinare i commentidal più recente
 
         res.status(200).json(comments)
@@ -52,12 +52,13 @@ router.post("/:id/comments", async (req, res) => {
             return res.status(404).json({ error: "Post non trovato" })
         }
 
-        const newComment = new commentsModel({body, author, id})
+        const newComment = new commentsModel({ body, author, postId: id })
 
         const savedComment = await newComment.save()
         res.status(201).json(savedComment)
 
     } catch (err) {
+        console.error(err); // <--- AGGIUNGI QUESTA RIGA
         res.status(500).json({error: "Errore nella creazione del commento"})
     }
 })

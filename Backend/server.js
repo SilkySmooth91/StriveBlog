@@ -13,6 +13,7 @@ app.use(cors())
 
 app.use("/authors", authorsRoutes)
 app.use("/posts", postsRoutes)
+app.use("/posts", commentsRoutes)
 
 
 db();

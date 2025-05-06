@@ -21,7 +21,7 @@ router.get("/params", async (req, res) => {
 
 router.get("/", async (req, res) => {
     try {
-        const posts = await postsModel.find()
+        const posts = await postsModel.find().populate("author")
         res.status(200).json(posts)
     } catch (err) {
         res.status(500).json({ error: "errore nel caricamento dei post" })

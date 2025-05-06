@@ -8,9 +8,9 @@ const postsSchema = new mongoose.Schema({
         value: {type: Number, required: true},
         unit: {type: String, required: true}
     },
-    author: {type: String, required: true},
+    author: {type: mongoose.Schema.Types.ObjectId, ref: "Authors", required: true},
     content: {type: String, required: true}
-})
+}, {timestamps: true})
 
 const postsModel = mongoose.model("Posts", postsSchema)
 
