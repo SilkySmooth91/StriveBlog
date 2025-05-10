@@ -1,6 +1,7 @@
 import express from "express"
 import postsModel from "../models/PostsSchema.js"
 import { uploadCover } from "../middlewares/multer.js"
+import authMiddleware from "../middlewares/authMiddleware.js" 
 
 const router = express.Router()
 
@@ -31,18 +32,23 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     const id = req.params.id
     try {
-        const post = await postsModel.findById(id)
+        const post = await postsModel.findById(id).populate("author")
         res.status(200).json(post)
     } catch (err) {
         res.status(500).json({ error: "errore nel caricamento del post" })
     }
 })
 
-router.post("/", async (req, res) => {
-    const obj = req.body
-    const post = new postsModel(obj)
-    const dbPosts = await post.save()
-    res.status(201).json(dbPosts)
+router.post("/", authMiddleware, async (req, res) => {
+    try {
+        const obj = req.body
+        obj.author = req.user._id // Associa l'autore autenticato
+        const post = new postsModel(obj)
+        const dbPosts = await post.save()
+        res.status(201).json(dbPosts)
+    } catch (err) {
+        res.status(500).json({ error: "Errore durante la creazione del post" })
+    }
 })
 
 router.put("/:id", async (req, res) => {

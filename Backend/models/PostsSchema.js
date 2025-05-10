@@ -8,7 +8,7 @@ const postsSchema = new mongoose.Schema({
         value: {type: Number, required: true},
         unit: {type: String, required: true}
     },
-    author: {type: mongoose.Schema.Types.ObjectId, ref: "Authors", required: true},
+    author: {type: mongoose.Schema.Types.ObjectId, ref: "Users", required: true},
     content: {type: String, required: true}
 }, {timestamps: true})
 

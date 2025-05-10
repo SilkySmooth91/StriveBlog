@@ -1,13 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Container, Navbar, Form, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import logo from "../../assets/logo.png";
+import { jwtDecode } from "jwt-decode";
 import "./styles.css";
 
 const NavBar = props => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const payload = jwtDecode(token);
+        setUser(payload);
+      } catch {
+        setUser(null);
+      }
+    } else {
+      setUser(null);
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -20,8 +36,11 @@ const NavBar = props => {
       });
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("token", data); // Salva il token
-        // Puoi aggiungere qui una redirect o aggiornare lo stato dell'app
+        localStorage.setItem("token", data);
+        const payload = jwtDecode(data);
+        setUser(payload);
+        setEmail("");
+        setPassword("");
       } else {
         setError(data.message);
       }
@@ -30,45 +49,61 @@ const NavBar = props => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+  };
+
   return (
-    <Navbar expand="lg" className="blog-navbar" fixed="top">
+    <Navbar expand="lg" className="blog-navbar p-0" fixed="top">
       <Container className="justify-content-between">
         <Navbar.Brand as={Link} to="/">
           <img className="blog-navbar-brand" alt="logo" src={logo} />
         </Navbar.Brand>
 
-        <Form onSubmit={handleLogin}>
-          <Row className="align-items-center justify-content-center">
+        {user ? (
+          <Row className="align-items-center">
             <Col>
-              <Form.Group className="mb-3" controlId="formGroupEmail">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control
-                  type="email"
-                  placeholder="Enter email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  required
-                />
-              </Form.Group>
-            </Col>
-            <Col>
-              <Form.Group className="mb-3" controlId="formGroupPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
-                />
-              </Form.Group>
-            </Col>
-            <Col>
-              <Button variant="primary" type="submit">login</Button>
+              <span className="me-3">Ciao, {user.fullname}</span>
+              <Button variant="outline-danger" onClick={handleLogout}>
+                Logout
+              </Button>
             </Col>
           </Row>
-          {error && <div className="text-danger">{error}</div>}
-        </Form>
+        ) : (
+          <Form onSubmit={handleLogin}>
+            <Row className="align-items-center justify-content-center">
+              <Col>
+                <Form.Group className="mb-3" controlId="formGroupEmail">
+                  <Form.Label>Email address</Form.Label>
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group className="mb-3" controlId="formGroupPassword">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+              </Col>
+              <Col>
+                <Button variant="primary" type="submit">login</Button>
+              </Col>
+            </Row>
+            {error && <div className="text-danger">{error}</div>}
+          </Form>
+        )}
 
         <Button as={Link} to="/new" className="blog-navbar-add-button bg-dark" size="lg">
           <svg
