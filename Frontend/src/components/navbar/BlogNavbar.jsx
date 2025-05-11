@@ -99,8 +99,26 @@ const NavBar = props => {
                   />
                 </Form.Group>
               </Col>
-              <Col>
-                <Button variant="primary" type="submit">login</Button>
+              <Col className="d-flex gap-2">
+                <Button variant="primary" type="submit">Login</Button>
+                <Button
+                  variant="light"
+                  className="d-flex align-items-center"
+                  style={{
+                    border: "1px solid #ddd",
+                    borderRadius: 4,
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                    padding: "8px 16px"
+                  }}
+                  href="http://localhost:3001/auth/googlelogin"
+                >
+                  <img
+                    src="https://developers.google.com/identity/images/g-logo.png"
+                    alt="Google"
+                    style={{ width: 18, height: 18, marginRight: 8 }}
+                  />
+                  Accedi con Google
+                </Button>
               </Col>
             </Row>
             {error && <div className="text-danger">{error}</div>}

@@ -7,10 +7,13 @@ import postsRoutes from "./routes/posts.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import usersRoutes from "./routes/users.routes.js";
 import commentsRoutes from "./routes/comments.routes.js";
+import googleStrategy from './middlewares/oAuthMiddleware.js';
+import passport from 'passport';
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+passport.use("google", googleStrategy);
 
 app.use("/authors", authorsRoutes);
 app.use("/posts", postsRoutes);

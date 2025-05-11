@@ -3,6 +3,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import "dotenv/config"
 import usersModel from "../models/UsersSchema.js"
+import passport from "passport";
 
 const router = express.Router()
 const saltRounds = +process.env.SALT_ROUNDS
@@ -86,13 +87,31 @@ router.post("/login", async (req, res) => {
     }
 })
 
-//funzione di creazione del token
+router.get("/googlelogin", passport.authenticate("google", { scope: ["profile", "email"] }));
 
+router.get("/googlelogin/callback", 
+  passport.authenticate("google", { session: false, failureRedirect: "http://localhost:3000/" }), 
+  (req, res) => {
+    try {
+      if (req.user && req.user.accessToken) {
+        // Redirect al frontend con il token
+        res.redirect(`http://localhost:3000?token=${req.user.accessToken}`);
+      } else {
+        res.redirect("http://localhost:3000/login");
+      }
+    } catch (err) {
+      console.error(err);
+      res.redirect("http://localhost:3000/login");
+    }
+  }
+);
+
+// funzione di creazione del token
 const generateToken = (payload) => {
     return new Promise((res, rej) => {
-        jwt.sign(payload, jwtSecretKey, {expiresIn: "1d"}, (err, token) => {
-            if(err) rej(err)
-                else res(token)
+        jwt.sign(payload, jwtSecretKey, { expiresIn: "1d" }, (err, token) => {
+            if (err) rej(err)
+            else res(token)
         })
     })
 }

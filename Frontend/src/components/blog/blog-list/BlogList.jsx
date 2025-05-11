@@ -12,7 +12,6 @@ const BlogList = ({ filters }) => {
     // Chiedi i post già ordinati dal più recente al meno recente
     axios
       .get("http://localhost:3001/posts", {
-        // Se vuoi usare la paginazione/params, puoi cambiare qui
       })
       .then(res => {
         setPosts(res.data);

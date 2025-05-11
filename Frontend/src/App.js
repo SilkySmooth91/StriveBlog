@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import NavBar from "./components/navbar/BlogNavbar";
 import Footer from "./components/footer/Footer";
 import Home from "./views/home/Home";
@@ -17,6 +17,21 @@ function App() {
   useEffect(() => {
     fetchAuthors()
   }, [])
+
+  useEffect(() => {
+  // Cerca il token nei query parameters
+  const queryParams = new URLSearchParams(window.location.search);
+  const token = queryParams.get('token');
+  
+  if (token) {
+    // Salva il token
+    localStorage.setItem('token', token);
+    // Pulisce l'URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+    // refresh della pagina
+    window.location.reload();
+  }
+}, []);
 
   return (
     <Router>
