@@ -3,6 +3,8 @@ import { Container, Image, Alert } from "react-bootstrap";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import BlogAuthor from "../../components/blog/blog-author/BlogAuthor";
 import BlogLike from "../../components/likes/BlogLike";
+import CommentList from "../../components/comments/CommentList";
+import CommentForm from "../../components/comments/CommentForm";
 import "./styles.css";
 
 const Blog = props => {
@@ -12,6 +14,7 @@ const Blog = props => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showSuccess, setShowSuccess] = useState(!!location.state?.success);
+  const [refreshComments, setRefreshComments] = useState(false);
 
   useEffect(() => {
     const { id } = params;
@@ -68,6 +71,15 @@ const Blog = props => {
               __html: blog.content,
             }}
           ></div>
+
+          {/* Commenti */}
+          <hr />
+          <h4 className="mt-5">Commenti</h4>
+          <CommentForm
+            postId={blog._id}
+            onCommentAdded={() => setRefreshComments(r => !r)}
+          />
+          <CommentList postId={blog._id} key={refreshComments} />
         </Container>
       </div>
     );

@@ -2,6 +2,7 @@ import express from "express"
 import "dotenv/config"
 import usersModel from "../models/UsersSchema.js"
 import authMiddleware from "../middlewares/authMiddleware.js"
+import { uploadAvatar } from "../middlewares/multer.js"
 
 const router = express.Router()
 
@@ -14,7 +15,7 @@ router.get("/", authMiddleware, async (req, res) => {
     }   
 })
 
-router.get("/users/:id", authMiddleware, async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
     const id = req.params.id
     try {
         const user = await usersModel.findById(id)
@@ -26,6 +27,24 @@ router.get("/users/:id", authMiddleware, async (req, res) => {
         res.status(400).json({ message: "ID non valido" })
     }
 })
+
+router.patch("/:id/avatar", authMiddleware, uploadAvatar, async (req, res) => {
+    const id = req.params.id;
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: "Nessun file caricato" });
+        }
+        const userUpdated = await usersModel.findByIdAndUpdate(
+            id,
+            { avatar: req.file.path },
+            { new: true }
+        ).select("-password"); // Serve ad escludere la password dalla risposta
+        res.status(200).json(userUpdated);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Errore durante il caricamento del file" });
+    }
+});
 
 export default router
 

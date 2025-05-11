@@ -64,7 +64,9 @@ const NavBar = props => {
         {user ? (
           <Row className="align-items-center">
             <Col>
-              <span className="me-3">Ciao, {user.fullname}</span>
+              <Link to={`/users/${user.id}`} className="me-3 nav-link" style={{ display: "inline", padding: 0 }}>
+                Ciao, {user.fullname}
+              </Link>
               <Button variant="outline-danger" onClick={handleLogout}>
                 Logout
               </Button>

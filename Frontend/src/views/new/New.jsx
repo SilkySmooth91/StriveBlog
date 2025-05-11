@@ -15,7 +15,7 @@ const NewBlogPost = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
-  const [cover, setCover] = useState("");
+  const [coverFile, setCoverFile] = useState(null); // gestisce il file immagine
   const [readTimeValue, setReadTimeValue] = useState("");
   const [readTimeUnit, setReadTimeUnit] = useState("min");
   const [authorId, setAuthorId] = useState("");
@@ -50,20 +50,25 @@ const NewBlogPost = () => {
       return;
     }
     try {
+      // Usa FormData per inviare anche il file
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("content", content);
+      formData.append("category", category);
+      formData.append("readTime[value]", readTimeValue);
+      formData.append("readTime[unit]", readTimeUnit);
+      // author non serve, viene preso dal backend
+      if (coverFile) {
+        formData.append("cover", coverFile);
+      }
+
       const res = await fetch("http://localhost:3001/posts", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: "Bearer " + token,
+          // NON mettere Content-Type qui, lo gestisce il browser con FormData
         },
-        body: JSON.stringify({
-          title,
-          content,
-          category,
-          cover,
-          readTime: { value: readTimeValue, unit: readTimeUnit },
-          author: authorId,
-        }),
+        body: formData,
       });
       const data = await res.json();
       console.log(data);
@@ -72,7 +77,7 @@ const NewBlogPost = () => {
         setTitle("");
         setContent("");
         setCategory("");
-        setCover("");
+        setCoverFile(null);
         setReadTimeValue("");
         setReadTimeUnit("min");
         navigate(`/blog/${data._id}`, { state: { success: "Articolo creato con successo!" } });
@@ -94,8 +99,8 @@ const NewBlogPost = () => {
 
   return (
     <Container className="mt-5">
-      <h2>Nuovo Post</h2>
-      <Form onSubmit={handleSubmit}>
+      <h2 className="pt-5">Nuovo Post</h2>
+      <Form onSubmit={handleSubmit} encType="multipart/form-data">
         <Form.Group className="mb-3">
           <Form.Label>Titolo</Form.Label>
           <Form.Control
@@ -125,11 +130,11 @@ const NewBlogPost = () => {
           />
         </Form.Group>
         <Form.Group className="mb-3">
-          <Form.Label>URL Cover</Form.Label>
+          <Form.Label>Cover (immagine)</Form.Label>
           <Form.Control
-            type="text"
-            value={cover}
-            onChange={e => setCover(e.target.value)}
+            type="file"
+            accept="image/*"
+            onChange={e => setCoverFile(e.target.files[0])}
             required
           />
         </Form.Group>

@@ -12,17 +12,21 @@ router.get("/params", async (req, res) => {
     const prop = req.query.order;
 
     try {
-        const filterPosts = await userModel.find().sort({[prop]:1}).limit(size).skip(skip)
-        return res.status(200).json(filterPosts)
+        const filterPosts = await postsModel
+            .find()
+            .populate("author")
+            .sort({ [prop]: -1 })
+            .limit(size)
+            .skip(skip);
+        return res.status(200).json(filterPosts);
     } catch (err) {
-        return res.status(500).json({ error: err.message })
+        return res.status(500).json({ error: err.message });
     }
-
-})
+});
 
 router.get("/", async (req, res) => {
     try {
-        const posts = await postsModel.find().populate("author")
+        const posts = await postsModel.find().populate("author").sort({ createdAt: -1 })
         res.status(200).json(posts)
     } catch (err) {
         res.status(500).json({ error: "errore nel caricamento dei post" })
@@ -39,17 +43,21 @@ router.get("/:id", async (req, res) => {
     }
 })
 
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", authMiddleware, uploadCover, async (req, res) => {
     try {
-        const obj = req.body
-        obj.author = req.user._id // Associa l'autore autenticato
-        const post = new postsModel(obj)
-        const dbPosts = await post.save()
-        res.status(201).json(dbPosts)
+        const obj = req.body;
+        obj.author = req.user._id; // Associa l'autore autenticato
+        if (req.file && req.file.path) {
+            obj.cover = req.file.path; // Salva l'URL Cloudinary nel campo cover
+        }
+        const post = new postsModel(obj);
+        const dbPosts = await post.save();
+        res.status(201).json(dbPosts);
     } catch (err) {
-        res.status(500).json({ error: "Errore durante la creazione del post" })
+        console.log(err);
+        res.status(500).json({ error: "Errore durante la creazione del post" });
     }
-})
+});
 
 router.put("/:id", async (req, res) => {
     const id = req.params.id
