@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Image, Alert } from "react-bootstrap";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import BlogAuthor from "../../components/blog/blog-author/BlogAuthor";
