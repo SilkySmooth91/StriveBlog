@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode"; // serve a decodificare il token JWT come jwt.verify nel backend
@@ -62,7 +62,7 @@ const NewBlogPost = () => {
         formData.append("cover", coverFile);
       }
 
-      const res = await fetch("http://localhost:3001/posts", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/posts`, {
         method: "POST",
         headers: {
           Authorization: "Bearer " + token,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
 
 const RegisterForm = () => {
@@ -14,7 +14,7 @@ const RegisterForm = () => {
     setError("");
     setSuccess("");
     try {
-      const res = await fetch("http://localhost:3001/auth/register", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, username, fullname }),

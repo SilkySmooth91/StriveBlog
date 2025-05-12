@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   const fetchAuthors = async () => {
-    const res = await fetch(process.env.REACT_APP_APIURL + "/authors");
+    const res = await fetch(process.env.REACT_APP_API_URL + "/authors");
     const data = await res.json();
     console.log(data)
   }

@@ -18,7 +18,7 @@ const Blog = props => {
 
   useEffect(() => {
     const { id } = params;
-    fetch(`http://localhost:3001/posts/${id}`)
+    fetch(`${process.env.REACT_APP_API_URL}/posts/${id}`)
       .then(res => {
         if (!res.ok) throw new Error();
         return res.json();

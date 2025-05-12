@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import axios from "axios";
 
@@ -18,7 +18,7 @@ const CommentForm = ({ postId, onCommentAdded }) => {
         return;
       }
       await axios.post(
-        `http://localhost:3001/posts/${postId}/comments`,
+        `${process.env.REACT_APP_API_URL}/posts/${postId}/comments`,
         { body },
         {
           headers: {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ListGroup, Spinner, Alert } from "react-bootstrap";
 import axios from "axios";
 
@@ -9,7 +9,7 @@ const CommentList = ({ postId }) => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/posts/${postId}/comments`)
+      .get(`${process.env.REACT_APP_API_URL}/posts/${postId}/comments`)
       .then(res => {
         setComments(res.data);
         setLoading(false);

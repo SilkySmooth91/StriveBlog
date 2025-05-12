@@ -29,7 +29,7 @@ const NavBar = props => {
     e.preventDefault();
     setError("");
     try {
-      const res = await fetch("http://localhost:3001/auth/login", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -110,7 +110,7 @@ const NavBar = props => {
                     boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                     padding: "8px 16px"
                   }}
-                  href="http://localhost:3001/auth/googlelogin"
+                  href={`${process.env.REACT_APP_API_URL}/auth/googlelogin`}
                 >
                   <img
                     src="https://developers.google.com/identity/images/g-logo.png"

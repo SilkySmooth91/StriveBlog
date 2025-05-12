@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Col, Row, Spinner, Alert } from "react-bootstrap";
 import BlogItem from "../blog-item/BlogItem";
 import axios from "axios";
@@ -11,8 +11,7 @@ const BlogList = ({ filters }) => {
   useEffect(() => {
     // Chiedi i post già ordinati dal più recente al meno recente
     axios
-      .get("http://localhost:3001/posts", {
-      })
+      .get(`${process.env.REACT_APP_API_URL}/posts`)
       .then(res => {
         setPosts(res.data);
         setLoading(false);

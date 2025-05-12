@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Button, Form, Alert, Image, Container } from "react-bootstrap";
 import axios from "axios";
@@ -13,7 +13,7 @@ const UserProfile = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
-      .get(`http://localhost:3001/users/${id}`, {
+      .get(`${process.env.REACT_APP_API_URL}/users/${id}`, {
         headers: { Authorization: "Bearer " + token },
       })
       .then(res => setUser(res.data))
@@ -34,7 +34,7 @@ const UserProfile = () => {
     formData.append("avatar", avatarFile);
     try {
       const res = await axios.patch(
-        `http://localhost:3001/users/${id}/avatar`,
+        `${process.env.REACT_APP_API_URL}/users/${id}/avatar`,
         formData,
         {
           headers: {
